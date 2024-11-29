@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Booking history</title>
+    <title>Admin</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -19,6 +19,7 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
+	<link href="css/sb-admin-2.min.css" rel="stylesheet">
 	<link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 </head>
 
@@ -28,6 +29,28 @@
 		include_once("db.php");
 		session_start();
 		$db=new db();
+		if($_SERVER["REQUEST_METHOD"]=="POST" and isset($_POST["action"])){
+			if($_POST["action"]=="create"){
+				$st=$db->prepare_statement("insert into hall (hall_name,capacity,description,status) values (?,?,?,true)");
+				$st->bind_param("sss",$_POST["hallname"],$_POST["hallcap"],$_POST["halldescr"]);
+				$st->execute();
+				echo "<script>alert('New hall added');window.location.href='hallmanage.php'</script>";
+			}
+			else if($_POST["action"]=="remove"){
+				$st=$db->prepare_statement("delete from hall where hall_id=?");
+				$st->bind_param("d",$_POST["hall_id"]);
+				$st->execute();
+				echo "<script>alert('Hall removed');window.location.href='hallmanage.php'</script>";
+			}
+			else if($_POST["action"]=="toggle"){
+				$status="1";
+				if($_POST["status"]=="1") $status="0";
+				$st=$db->prepare_statement("update hall set status=? where hall_id=?");
+				$st->bind_param("sd",$status,$_POST["hall_id"]);
+				$st->execute();
+				echo "<script>alert('Status of the hall has been changed');window.location.href='hallmanage.php'</script>";
+			}
+		}
 	?>
 
     <!-- Page Wrapper -->
@@ -37,26 +60,24 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <span class="sidebar-brand d-flex align-items-center justify-content-center">
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">Hall booking</div>
-            </a>
+                <div class="sidebar-brand-text mx-3">ADMIN PANEL</div>
+            </span>
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
-
-            
-            <li class="nav-item">
-                <a class="nav-link" href="index.php">
+			<li class="nav-item">
+                <a class="nav-link" href="admin.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
+                    <span>Booking requests</span></a>
             </li>
 			<li class="nav-item active">
-                <a class="nav-link" href="booking_history.php">
+                <a class="nav-link" href="hallmanage.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Booking history</span></a>
+                    <span>Hall management</span></a>
             </li>
 			<?php
 				if(isset($_SESSION["token"])){					
@@ -65,7 +86,7 @@
                 <a class="nav-link" href="login.php?action=logout">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Logout</span></a>
-            </li>
+            </li>			
 			<?php
 				}
 				else echo("<script>window.location.href='login.php'</script>");
@@ -84,36 +105,50 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Your previous bookings</h1>
+                    <h1 class="h3 mb-2 text-gray-800">Create and manage event premises</h1>
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
+							<form class="form w-50" method="POST" onsubmit="return confirm('are you sure?');">								
+								Hall name: <input type="text" name="hallname" class="form-control" required /><br/>
+								Capacity: <input type="number" min="1" name="hallcap" class="form-control" required /><br/>
+								Description<br/><textarea name="halldescr" class="form-control" required></textarea><br/>
+								<button class="btn btn-primary" type="submit" name="action" value="create">Create hall</button>
+							</form>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Event</th>
-                                            <th>From</th>
-                                            <th>To</th>
-                                            <th>Department</th>
-                                            <th>Hall</th>
-                                            <th>Status</th>
+                                            <th>Hall ID</th>
+											<th>Hall Name</th>
+                                            <th>Capacity</th>
+                                            <th>Description</th>
+											<th>Availability</th>
+											<th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
 										<?php
-											$res=$db->exec_query(sprintf("select event_name,dept,(select hall_name from hall where hall_id=booking.hall) as hall,status,DATE(fromtime) as date,TIME(fromtime) as fromtime,TIME(totime) as totime from booking where uname='%s' order by date(fromtime) desc",$_SESSION["token"]));
+											$res=$db->exec_query(sprintf("select * from hall"));
 											foreach($res as $i){
-												echo "<tr><td>".$i["event_name"]."</td>";
-												echo "<td>".$i["date"]." ".$i["fromtime"]."</td>";
-												echo "<td>".$i["totime"]."</td>";
-												echo "<td>".$i["dept"]."</td>";
-												echo "<td>".$i["hall"]."</td>";
-												$status="Awaiting approval";
-												if($i["status"]==1) $status="Booked";
-												if(strtotime($i["date"])<strtotime(date("Y-m-d"))==1) $status="Event over";												
-												echo "<td>".$status."</td></tr>";
+												echo "<tr><td>".$i["hall_id"]."</td>";
+												echo "<td>".$i["hall_name"]."</td>";
+												echo "<td>".$i["capacity"]."</td>";
+												echo "<td>".$i["description"]."</td>";
+												if($i["status"]==1) echo "<td>Available</td>";
+												else echo "<td>Disabled</td>";
+												?>
+												<td>
+													<form method="POST" onsubmit="return confirm('Are you sure?')">
+														<input type="text" name="hall_id" value="<?php echo $i["hall_id"] ?>" hidden/>
+														<input type="text" name="status" value="<?php echo $i["status"] ?>" hidden/>
+														<button type="submit" name="action" value="remove" class="btn btn-danger">Remove</button>
+														<button type="submit" name="action" value="toggle" class="btn btn-primary">Toggle availability</button>
+													</form>
+												</td>
+												</tr>
+												<?php
 											}
 										?>
                                     </tbody>
@@ -144,30 +179,7 @@
     </div>
     <!-- End of Page Wrapper -->
 
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
@@ -183,8 +195,6 @@
 
     <!-- Page level custom scripts -->
     <script src="js/datatables.js"></script>
-    
-
 </body>
 
 </html>

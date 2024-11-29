@@ -141,9 +141,14 @@
 									<div class="col w-25">
 										<small class="form-text text-muted">Select the hall to book</small><br/>
 										<select id="hallselect" class="form-control mt-2" onchange="dateSelector()">
-											<option value="Seminar Hall" selected>Seminar Hall</option>
-											<option value="MBA Hall">MBA Hall</option>
-											<option value="Psychology Hall">Psychology hall</option>
+											<?php
+												$res=$db->exec_query("select * from hall where status=1");
+												$sel="selected";
+												foreach($res as $i){
+													echo sprintf("<option value='%s' %s>%s</option>",$i["hall_id"],$sel,$i["hall_name"]);
+													$sel="";
+												}
+											?>
 										</select><br/>
 									</div>
 								</div>

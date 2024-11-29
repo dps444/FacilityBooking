@@ -47,8 +47,16 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
-
-            
+			<li class="nav-item active">
+                <a class="nav-link" href="admin.php">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Booking requests</span></a>
+            </li>
+			<li class="nav-item">
+                <a class="nav-link" href="hallmanage.php">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Hall management</span></a>
+            </li>
 			<?php
 				if(isset($_SESSION["token"])){					
 			?>
@@ -56,7 +64,7 @@
                 <a class="nav-link" href="login.php?action=logout">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Logout</span></a>
-            </li>
+            </li>			
 			<?php
 				}
 				else echo("<script>window.location.href='login.php'</script>");
@@ -77,8 +85,6 @@
                     <!-- Page Heading -->
                     <h1 class="h3 mb-2 text-gray-800">Approve bookings</h1>
                     <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                        </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -95,7 +101,7 @@
                                     </thead>
                                     <tbody>
 										<?php
-											$res=$db->exec_query(sprintf("select booking_id,event_name,email,fname,dept,hall,status,DATE(fromtime) as date,TIME(fromtime) as fromtime,TIME(totime) as totime from booking where status=0 order by date(fromtime) desc"));
+											$res=$db->exec_query(sprintf("select booking_id,event_name,email,fname,dept,(select hall_name from hall where hall_id=booking.hall) as hall,status,DATE(fromtime) as date,TIME(fromtime) as fromtime,TIME(totime) as totime from booking where status=0 order by date(fromtime) desc"));
 											foreach($res as $i){
 												echo "<tr><td>".$i["event_name"]."</td>";
 												echo "<td>".$i["fname"]."</td>";
