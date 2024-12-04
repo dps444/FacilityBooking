@@ -26,7 +26,6 @@
                 const date=new Date();
                 cdate+=date.getFullYear().toString()+"-"
                 cdate+=(date.getMonth()+1).toLocaleString("en-US",{"minimumIntegerDigits":2});
-                monthselect.setAttribute("min",cdate);
                 if(new URLSearchParams(window.location.search).get("date")) cdate=new URLSearchParams(window.location.search).get("date");
                 monthselect.setAttribute("value",cdate.split("-")[0]+"-"+cdate.split("-")[1]);
 				if(sessionStorage.getItem("hall")) document.getElementById("hallselect").value=sessionStorage.getItem("hall");
@@ -39,17 +38,21 @@
 				let selected=document.getElementById("monthselect").value.split("-");
 				let numdays=new Date(parseInt(selected[0]),parseInt(selected[1]),0).getDate();
 				dayselect.innerHTML="";
-				let res=await fetch(`getdates.php?date=${selected.join("-")}&hall=${hall}`);
+				let res=await fetch(`getdates.php?date=${selected.join("-")}&hall=${hall}&gettimes=false`);
 				res=await res.json();				
 				for(let i=0;i<numdays;i++){
 					let cl="btn m-2 ";
+					let isdisabled="";
 					let day=(new Date(selected.join("-")+`-${i+1}`).toLocaleString("en-US",{"weekday":"long"}));
-					if(res.indexOf((i+1).toString())!=-1) cl="btn bg-danger";
+					if(res.indexOf((i+1).toString())!=-1) cl+=" bg-danger";
 					if(res.indexOf((i+1).toString())!=-1 && new Date(selected.join("-")+"-"+(i+1).toString()) <= new Date()) cl="btn bg-warning text-dark";
-					if(new Date(selected.join("-")+"-"+(i+1).toString()) <= new Date() || day==="Sunday") cl+=" btn-secondary disabled ";
-					else cl+=" btn-light";
+					if(new Date(selected.join("-")+"-"+(i+1).toString()) <= new Date() || day==="Sunday"){
+						isdisabled="disabled";
+						cl+=" btn-secondary disabled ";
+					}
+					else cl+=" btn-success";
 					dayselect.innerHTML+=`
-						<button data-bs-toggle='tooltip' class='${cl}' onclick="window.location.href='index.php?hall=${hall}&date=${selected.join("-")+"-"+(i+1).toLocaleString("en-US",{"minimumIntegerDigits":2})}'"  type='button'>${(i+1).toLocaleString("en-US",{"minimumIntegerDigits":2})}<br/>${day}</button>            
+						<a href='showinfo.php?hall=${hall}&date=${selected.join("-")+"-"+(i+1).toLocaleString("en-US",{"minimumIntegerDigits":2})}' style="width:100px"   class="${cl}" ${isdisabled}>${(i+1).toLocaleString("en-US",{"minimumIntegerDigits":2})}<br/>${day.substring(0,3).toUpperCase()}</a>
 					`;
 				}
 			}
@@ -153,14 +156,14 @@
 									</div>
 								</div>
 								<div style="display:inline-block" class="mt-5" id="dayselect"></div>
-							</div>
-							<div class="container mt-3 border border-lg rounded p-3 shadow" style="background-color:#f0f0f0">
-								<?php
+								<div class="modal" role="dialog" id="infomodal">
+									<?php
 									if(isset($_GET["date"]) and isset($_GET["hall"])){
 										include("showinfo.php");
 									}
 								?>
-							</div>
+								</div>
+							</div>							
                         </div>
 
                         

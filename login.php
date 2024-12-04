@@ -54,11 +54,11 @@
 					$res=$st->get_result()->fetch_all(MYSQLI_ASSOC);
 					if(count($res)>0 and $res[0]["type"]==0){
                         $_SESSION["token"]=$_POST["uname"];
-                        echo "<script>alert('Login successful');window.location.href='index.php';</script>";
+                        echo "<script>window.location.href='index.php';</script>";
                     }
 					else if(count($res)>0 and $res[0]["type"]==1){
 						$_SESSION["token"]=$_POST["uname"];
-                        echo "<script>alert('Login successful');window.location.href='admin.php';</script>";
+                        echo "<script>window.location.href='admin.php';</script>";
 					}
                     else echo "<script>alert('Invalid username or password');</script>";
                 }

@@ -55,7 +55,7 @@
 			<li class="nav-item">
                 <a class="nav-link" href="hallmanage.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Hall management</span></a>
+                    <span>Facilities</span></a>
             </li>
 			<?php
 				if(isset($_SESSION["token"])){					

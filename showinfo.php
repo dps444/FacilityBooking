@@ -1,21 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        <link href="css/styles.css" rel="stylesheet" />
-    </head>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>Booking information</title>
+
+		<!-- Custom fonts for this template-->
+		<link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+		<link
+			href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+			rel="stylesheet">
+
+		<!-- Custom styles for this template-->
+		<link href="css/sb-admin-2.min.css" rel="stylesheet">
+	</head>
     <body>
-        <div class="fs-4 p-3">
+        <div class="container mt-3 border border-lg rounded p-3 shadow" style="background-color:#f0f0f0">
         <?php
             include_once("db.php");
+			session_start();
             $db=new db();
             if(isset($_GET["date"])){
-				$hall="seminar";
+				$hall="1";
 				if(isset($_SESSION["hall"])) $hall=$_SESSION["hall"];
-                $res=$db->exec_query(sprintf("select booking_id,uname,hall,fname,DATE(fromtime) as date,TIME(fromtime) as fromtime,TIME(totime) as totime,event_name,status from booking where DATE(fromtime)='%s' and hall='%s'",$_GET["date"],$_GET["hall"]));
+                $res=$db->exec_query(sprintf("select booking_id,uname,(select hall_name from hall where hall_id=booking.hall) as hall,fname,DATE(fromtime) as date,TIME(fromtime) as fromtime,TIME(totime) as totime,event_name,status from booking where DATE(fromtime)='%s' and hall='%s'",$_GET["date"],$_GET["hall"]));
                 if(sizeof($res)>0 and (strtotime($_GET["date"])>strtotime(date("Y-m-d"))==1)){                    
         ?>
                 <h3><?php echo $res[0]["date"] ?></h2></br>
@@ -45,7 +57,7 @@
 					<input type="text" name="hall" value="<?php echo $_GET["hall"]?>" hidden/>
                     <div class="row mt-3">
                         <div class="col-2">
-                            <label class="form-text ml-3" for="ename">Event Name: </label>
+                            <label class="form-text ml-3">Event Name: </label>
                         </div>
                         <div class="col">
                             <input class="form-control w-50" type="text" name="ename" required="true"/>
@@ -53,7 +65,7 @@
                     </div>
 					<div class="row mt-3">
                         <div class="col-2">
-                            <label class="form-text ml-3" for="yname">Your name: </label>
+                            <label class="form-text ml-3">Your name: </label>
                         </div>
                         <div class="col">
                             <input class="form-control w-50" type="text" name="yname" required="true"/>
@@ -61,7 +73,7 @@
                     </div>
 					<div class="row mt-3">
                         <div class="col-2">
-                            <label class="form-text ml-3" for="email">Email: </label>
+                            <label class="form-text ml-3">Email: </label>
                         </div>
                         <div class="col">
                             <input class="form-control w-50" type="email" name="email" required="true"/>
@@ -69,7 +81,8 @@
                     </div>
 					<div class="row mt-3">
                         <div class="col-2">
-                            <label class="form-text ml-3" for="dept">Department: </label>
+                            <label class="form-text ml-3"
+							>Department: </label>
                         </div>
                         <div class="col">
 							<select name="dept" class="form-control w-25" required>
@@ -112,6 +125,17 @@
 				}
             }
         ?>
+		</br></br>
+		<a class="btn btn-secondary mt-3" href="index.php">Go Back</a>
         </div>
-    </body>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+</body>
 </html>

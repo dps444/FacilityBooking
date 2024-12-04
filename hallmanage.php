@@ -77,7 +77,7 @@
 			<li class="nav-item active">
                 <a class="nav-link" href="hallmanage.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Hall management</span></a>
+                    <span>Facilities</span></a>
             </li>
 			<?php
 				if(isset($_SESSION["token"])){					
@@ -104,15 +104,15 @@
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
-                    <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Create and manage event premises</h1>
+                    <!-- Page Heading -->                    
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
+							<h1 class="h3 mb-2 text-gray-800">Create and manage event premises</h1><br/>
 							<form class="form w-50" method="POST" onsubmit="return confirm('are you sure?');">								
-								Hall name: <input type="text" name="hallname" class="form-control" required /><br/>
-								Capacity: <input type="number" min="1" name="hallcap" class="form-control" required /><br/>
+								Hall name <input type="text" name="hallname" class="form-control" required /><br/>
+								Capacity <input type="number" min="1" name="hallcap" class="form-control" required /><br/>
 								Description<br/><textarea name="halldescr" class="form-control" required></textarea><br/>
-								<button class="btn btn-primary" type="submit" name="action" value="create">Create hall</button>
+								<button class="btn btn-primary" type="submit" name="action" value="create">Add new facility</button>
 							</form>
                         </div>
                         <div class="card-body">
@@ -124,7 +124,7 @@
 											<th>Hall Name</th>
                                             <th>Capacity</th>
                                             <th>Description</th>
-											<th>Availability</th>
+											<th>Status</th>
 											<th>Actions</th>
                                         </tr>
                                     </thead>
@@ -143,8 +143,9 @@
 													<form method="POST" onsubmit="return confirm('Are you sure?')">
 														<input type="text" name="hall_id" value="<?php echo $i["hall_id"] ?>" hidden/>
 														<input type="text" name="status" value="<?php echo $i["status"] ?>" hidden/>
+														<a href="halledit.php?hall_id=<?php echo $i["hall_id"]?>" class="btn btn-danger">Edit</a>
 														<button type="submit" name="action" value="remove" class="btn btn-danger">Remove</button>
-														<button type="submit" name="action" value="toggle" class="btn btn-primary">Toggle availability</button>
+														<button type="submit" name="action" value="toggle" class="btn btn-primary">Change status</button>
 													</form>
 												</td>
 												</tr>
