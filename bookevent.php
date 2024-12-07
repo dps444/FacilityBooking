@@ -7,14 +7,19 @@ try{
         $db=new db();    
         if($_POST["action"]=="book"){
             $_POST["from_time"]=$_POST["date"]." ".$_POST["from_time"].":00";
-            $_POST["to_time"]=$_POST["date"]." ".$_POST["to_time"].":00";        
-            $st=$db->prepare_statement("insert into booking (event_name,fromtime,totime,uname,fname,dept,email,hall) values(?,?,?,?,?,?,?,?)");
-            $st->bind_param("ssssssss",$_POST["ename"],$_POST["from_time"],$_POST["to_time"],$_SESSION["token"],$_POST["yname"],$_POST["dept"],$_POST["email"],$_POST["hall"]);
-            $st->execute();
-			(new SendEmail())->send($_POST["email"],"Booking request",
-				sprintf("You have requested to book the %s on %s",$_POST["hall"],$_POST["from_time"])
-			);
-            echo "<script>alert('booking requested');window.location.href='index.php';</script>";
+            $_POST["to_time"]=$_POST["date"]." ".$_POST["to_time"].":00";
+			$res=$db->exec_query(sprintf("select * from booking where TIME(fromtime)<='%s' and TIME(totime)>='%s'",$_POST["to_time"],$_POST["from_time"]));
+			if(sizeof($res)==0){
+				$st=$db->prepare_statement("insert into booking (event_name,fromtime,totime,uname,fname,dept,email,hall) values(?,?,?,?,?,?,?,?)");
+				$st->bind_param("ssssssss",$_POST["ename"],$_POST["from_time"],$_POST["to_time"],$_SESSION["token"],$_POST["yname"],$_POST["dept"],$_POST["email"],$_POST["hall"]);
+				$st->execute();
+				(new SendEmail())->send($_POST["email"],"Booking request",
+					sprintf("You have requested to book the %s on %s",$_POST["hall"],$_POST["from_time"])
+				);
+				echo "<script>alert('booking requested');window.location.href='index.php';</script>";
+			}
+			else echo "<script>alert('The slot you chose conflicts with other bookings, please choose another slot');window.location.href='".$_POST["pageurl"]."'</script>";
+			
         }
         else if($_POST["action"]=="cancel"){
 			$res=$db->exec_query(sprintf("select * from booking where booking_id=%s",$_POST["booking_id"]));

@@ -21,6 +21,7 @@
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
 	<link href="css/sb-admin-2.min.css" rel="stylesheet">
 	<link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+	<link href="resources/logo.jpg" rel="icon">
 </head>
 
 <body id="page-top">
@@ -39,8 +40,8 @@
 
             <!-- Sidebar - Brand -->
             <span class="sidebar-brand d-flex align-items-center justify-content-center">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
+                <div class="sidebar-brand-icon">
+                    <img src="resources/logo.jpg" style="width:50px;height:50px"/>
                 </div>
                 <div class="sidebar-brand-text mx-3">ADMIN PANEL</div>
             </span>
@@ -58,7 +59,7 @@
                     <span>Facilities</span></a>
             </li>
 			<?php
-				if(isset($_SESSION["token"])){					
+				if(isset($_SESSION["token"]) and $_SESSION["isadmin"]=="1"){
 			?>
 			<li class="nav-item">
                 <a class="nav-link" href="login.php?action=logout">

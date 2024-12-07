@@ -17,6 +17,7 @@
 
 		<!-- Custom styles for this template-->
 		<link href="css/sb-admin-2.min.css" rel="stylesheet">
+		<link href="resources/logo.jpg" rel="icon">
 	</head>
     <body>
         <div class="container mt-3 border border-lg rounded p-3 shadow" style="background-color:#f0f0f0">
@@ -24,6 +25,7 @@
             include_once("db.php");
 			session_start();
             $db=new db();
+			if(!isset($_SESSION["token"]) or (isset($_SESSION["isadmin"]) and $_SESSION["isadmin"]=="0")) echo "<script>window.location.href='login.php'</script>";
             if($_SERVER["REQUEST_METHOD"]=="GET" && isset($_GET["hall_id"])){
                 $res=$db->exec_query(sprintf("select * from hall where hall_id=%s",$_GET["hall_id"]));
                 if(sizeof($res)>0){
@@ -67,7 +69,7 @@
 			}
 			?>
 		</br></br>
-		<a class="btn btn-secondary mt-3" href="index.php">Go Back</a>
+		<a class="btn btn-secondary mt-3" href="hallmanage.php">Go Back</a>
         </div>
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

@@ -8,7 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-
     <title>Admin</title>
 
     <!-- Custom fonts for this template-->
@@ -21,6 +20,7 @@
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
 	<link href="css/sb-admin-2.min.css" rel="stylesheet">
 	<link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+	<link href="resources/logo.jpg" rel="icon">
 </head>
 
 <body id="page-top">
@@ -29,6 +29,7 @@
 		include_once("db.php");
 		session_start();
 		$db=new db();
+		if(!isset($_SESSION["token"]) or (isset($_SESSION["isadmin"]) and $_SESSION["isadmin"]=="0")) echo "<script>window.location.href='login.php'</script>";
 		if($_SERVER["REQUEST_METHOD"]=="POST" and isset($_POST["action"])){
 			if($_POST["action"]=="create"){
 				$st=$db->prepare_statement("insert into hall (hall_name,capacity,description,status) values (?,?,?,true)");
@@ -37,10 +38,14 @@
 				echo "<script>alert('New hall added');window.location.href='hallmanage.php'</script>";
 			}
 			else if($_POST["action"]=="remove"){
-				$st=$db->prepare_statement("delete from hall where hall_id=?");
-				$st->bind_param("d",$_POST["hall_id"]);
-				$st->execute();
-				echo "<script>alert('Hall removed');window.location.href='hallmanage.php'</script>";
+				$res=$db->exec_query("select count(*) from booking where hall_id=".$_POST["hall_id"]);
+				if(sizeof($res)>0) echo "<script>alert('This hall has been booked. It cannot be removed right now');window.location.href='hallmanage.php'</script>";
+				else{
+					$st=$db->prepare_statement("delete from hall where hall_id=?");
+					$st->bind_param("d",$_POST["hall_id"]);
+					$st->execute();
+					echo "<script>alert('Hall removed');window.location.href='hallmanage.php'</script>";
+				}
 			}
 			else if($_POST["action"]=="toggle"){
 				$status="1";
@@ -61,8 +66,8 @@
 
             <!-- Sidebar - Brand -->
             <span class="sidebar-brand d-flex align-items-center justify-content-center">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
+                <div class="sidebar-brand-icon">
+                    <img src="resources/logo.jpg" style="width:50px;height:50px"/>
                 </div>
                 <div class="sidebar-brand-text mx-3">ADMIN PANEL</div>
             </span>

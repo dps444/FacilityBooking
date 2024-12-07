@@ -19,32 +19,44 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-
+	<link href="resources/logo.jpg" rel="icon">
 </head>
 
 <body class="bg-gradient-primary">
 
-    <div class="container">
-
-        <!-- Outer Row -->
-        <div class="row justify-content-center">
-
-            <div class="container">
-            <div style="margin-top:5%">
-                <form class="form-group w-100 shadow p-4 mb-5 bg-white rounded"  action="login.php" method="POST">
-				<h1>Login</h1><br/>
-                    <input class="form-control w-50" type="text" name="uname" placeholder="Username" required="true"/><br/>
-                    <br/>
-                    <input class="form-control w-50" type="password" name="pass" placeholder="Password" required="true"/><br/>
-                    <br/>
-                    <button class="btn btn-primary" name="action" type="submit" value="login">Log in</button>
-                </form>
-            </div>
-        </div>
+    <div class="container">	
+		
+		<section class="container-fluid p-3 w-50 rounded shadow" style="margin-top:5%;background-color:white">
+			<section class="row justify-content-center">
+			  <section class="col-12">
+				<form class="form-container" action="login.php" method="POST">
+				<div class="form-group">
+				  <h4 class="text-center font-weight-bold"> Login </h4>
+				  <label>Username</label>
+				   <input type="text" class="form-control" name="uname" placeholder="Enter username" required/>
+				</div>
+				<div class="form-group">
+				  <label>Password</label>
+				  <input type="password" class="form-control" name="pass" placeholder="Password" required/>
+				</div>
+				<button type="submit" name="action" value="login" class="btn btn-primary btn-block">Log in</button>
+				</form>
+			  </section>
+			</section>
+		</section>
         <?php
             session_start();
             include_once("db.php");
-            if($_SERVER["REQUEST_METHOD"]=="POST" and isset($_POST["action"]) and  $_POST["action"]=="login"){
+			if($_SERVER["REQUEST_METHOD"]=="GET" and !isset($_GET["action"])){
+				if(isset($_SESSION["token"]) and $_SESSION["isadmin"]=="1") echo "<script>window.location.href='admin.php'</script>";
+				else if(isset($_SESSION["token"]) and $_SESSION["isadmin"]=="0") echo "<script>window.location.href='index.php'</script>";
+			}
+			else if($_SERVER["REQUEST_METHOD"]=="GET" and isset($_GET["action"]) and $_GET["action"]=="logout"){
+					unset($_SESSION["token"]);
+					unset($_SESSION["isadmin"]);
+					echo "<script>alert('logged out succesfully');window.location.href='login.php'</script>";
+			}
+            else if($_SERVER["REQUEST_METHOD"]=="POST" and isset($_POST["action"]) and  $_POST["action"]=="login"){
                 $db=new db();
                 if($db->status==false) echo "<script>alert('database connection error');</script>";
                 else{
@@ -54,30 +66,19 @@
 					$res=$st->get_result()->fetch_all(MYSQLI_ASSOC);
 					if(count($res)>0 and $res[0]["type"]==0){
                         $_SESSION["token"]=$_POST["uname"];
+						$_SESSION["isadmin"]="0";
                         echo "<script>window.location.href='index.php';</script>";
                     }
 					else if(count($res)>0 and $res[0]["type"]==1){
 						$_SESSION["token"]=$_POST["uname"];
+						$_SESSION["isadmin"]="1";
                         echo "<script>window.location.href='admin.php';</script>";
 					}
                     else echo "<script>alert('Invalid username or password');</script>";
                 }
                 $db->close();
             }
-			else if($_SERVER["REQUEST_METHOD"]=="GET" and isset($_GET["action"]) and $_GET["action"]=="logout"){
-					unset($_SESSION["token"]);
-					echo "<script>alert('logged out succesfully');window.location.href='login.php'</script>";
-			}
         ?>
-                        </div>
-                    </div>
-                </div>
-
-            
-
-        </div>
-
-    </div>
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>

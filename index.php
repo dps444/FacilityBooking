@@ -19,6 +19,7 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
+	<link href="resources/logo.jpg" rel="icon">
 	<script>
             window.onload=()=>{
                 let cdate="";
@@ -80,8 +81,8 @@
 
             <!-- Sidebar - Brand -->
             <span class="sidebar-brand d-flex align-items-center justify-content-center">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
+                <div class="sidebar-brand-icon">
+                    <img src="resources/logo.jpg" style="width:50px;height:50px"/>
                 </div>
                 <div class="sidebar-brand-text mx-3">Hall booking</div>
             </span>
