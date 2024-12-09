@@ -117,7 +117,7 @@
 								Hall name <input type="text" name="hallname" class="form-control" required /><br/>
 								Capacity <input type="number" min="1" name="hallcap" class="form-control" required /><br/>
 								Description<br/><textarea name="halldescr" class="form-control" required></textarea><br/>
-								<button class="btn btn-primary" type="submit" name="action" value="create">Add new facility</button>
+								<button class="btn btn-primary" type="submit" name="action" value="create"><i class="fa fa-plus mr-1"></i>Add new facility</button>
 							</form>
                         </div>
                         <div class="card-body">
@@ -148,9 +148,9 @@
 													<form method="POST" onsubmit="return confirm('Are you sure?')">
 														<input type="text" name="hall_id" value="<?php echo $i["hall_id"] ?>" hidden/>
 														<input type="text" name="status" value="<?php echo $i["status"] ?>" hidden/>
-														<a href="halledit.php?hall_id=<?php echo $i["hall_id"]?>" class="btn btn-danger">Edit</a>
-														<button type="submit" name="action" value="remove" class="btn btn-danger">Remove</button>
-														<button type="submit" name="action" value="toggle" class="btn btn-primary">Change status</button>
+														<a href="halledit.php?hall_id=<?php echo $i["hall_id"]?>" class="btn btn-danger"><i class="fas fa-pen mr-1"></i>Edit</a>
+														<button type="submit" name="action" value="remove" class="btn btn-danger"><i class="far fa-trash-alt mr-1"></i>Remove</button>
+														<button type="submit" name="action" value="toggle" class="btn btn-primary"><i class="fas fa-sync mr-1"></i>Change status</button>
 													</form>
 												</td>
 												</tr>

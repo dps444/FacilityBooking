@@ -108,7 +108,7 @@
                         </div>
                     </div>
 					
-                    <button type="submit" name="action" value="book" class="btn btn-success mt-3">Book</button>
+                    <button type="submit" name="action" value="book" class="btn btn-success mt-3"><i class="fa fa-plus mr-1"></i>Book</button>
                 </form>
         <?php				
                 }
@@ -139,7 +139,7 @@
                     ?>
                 <form class="mt-3" action="bookevent.php" onsubmit="return confirm('are you sure?')" method="POST">
                     <input type="text" name="booking_id" value="<?php echo $i["booking_id"]?>" hidden/>
-                    <button class="btn btn-primary" type="submit" name="action" value="cancel">Cancel</button>
+                    <button class="btn btn-primary" type="submit" name="action" value="cancel"><i class="far fa-trash-alt mr-1"></i>Cancel</button>
                 </form>
                 <?php                    
                 }
@@ -149,7 +149,7 @@
             }
         ?>
 		</br></br>
-		<a class="btn btn-secondary mt-3" href="index.php">Go Back</a>
+		<a class="btn btn-secondary mt-3" href="index.php"><i class="fas fa-reply mr-1"></i>Go Back</a>
         </div>
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

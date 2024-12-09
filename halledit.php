@@ -20,7 +20,7 @@
 		<link href="resources/logo.jpg" rel="icon">
 	</head>
     <body>
-        <div class="container mt-3 border border-lg rounded p-3 shadow" style="background-color:#f0f0f0">
+        <div class="container border border-lg rounded p-3 shadow" style="background-color:#f0f0f0;margin-top:5%">
         <?php
             include_once("db.php");
 			session_start();
@@ -56,7 +56,7 @@
                             <textarea class="form-control w-50" name="descr" required="true"><?php echo $res[0]["description"]?></textarea>
                         </div>
                     </div>
-                    <button type="submit" name="action" value="edit" class="btn btn-success mt-3">Save changes</button>
+                    <button type="submit" name="action" value="edit" class="btn btn-success mt-3"><i class="fa fa-save mr-1"></i>Save changes</button>
                 </form>
 			<?php
 				}
@@ -69,7 +69,7 @@
 			}
 			?>
 		</br></br>
-		<a class="btn btn-secondary mt-3" href="hallmanage.php">Go Back</a>
+		<a class="btn btn-secondary mt-3" href="hallmanage.php"><i class="fas fa-reply mr-1"></i>Go Back</a>
         </div>
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

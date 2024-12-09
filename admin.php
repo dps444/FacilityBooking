@@ -115,8 +115,8 @@
 													<form action="approval.php" method="POST" onsubmit="return confirm('Are you sure?')">
 														<input type="text" name="booking_id" value="<?php echo $i["booking_id"] ?>" hidden/>
 														<input type="text" name="email" value="<?php echo $i["email"] ?>" hidden/>
-														<button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
-														<button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
+														<button type="submit" name="action" value="approve" class="btn btn-success"><i class="fa fa-check mr-1"></i>Approve</button>
+														<button type="submit" name="action" value="reject" class="btn btn-danger"><i class="fa fa-times mr-1"></i>Reject</button>
 													</form>
 												</td>
 												</tr>
