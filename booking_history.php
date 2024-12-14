@@ -43,7 +43,7 @@
                 <div class="sidebar-brand-icon">
                     <img src="resources/logo.jpg" style="width:50px;height:50px"/>
                 </div>
-                <div class="sidebar-brand-text mx-3">Hall booking</div>
+                <div class="sidebar-brand-text mx-3">Facilities Booking</div>
             </a>
 
             <!-- Divider -->
@@ -101,11 +101,12 @@
                                             <th>Department</th>
                                             <th>Hall</th>
                                             <th>Status</th>
+											<th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
 										<?php
-											$res=$db->exec_query(sprintf("select event_name,dept,(select hall_name from hall where hall_id=booking.hall) as hall,status,DATE(fromtime) as date,TIME(fromtime) as fromtime,TIME(totime) as totime from booking where uname='%s' order by date(fromtime) desc",$_SESSION["token"]));
+											$res=$db->exec_query(sprintf("select booking_id,event_name,dept,(select hall_name from hall where hall_id=booking.hall) as hall,status,DATE(fromtime) as date,TIME(fromtime) as fromtime,TIME(totime) as totime from booking where uname='%s' order by date(fromtime) desc",$_SESSION["token"]));
 											foreach($res as $i){
 												echo "<tr><td>".$i["event_name"]."</td>";
 												echo "<td>".$i["date"]." ".$i["fromtime"]."</td>";
@@ -115,7 +116,18 @@
 												$status="Awaiting approval";
 												if($i["status"]==1) $status="Booked";
 												if(strtotime($i["date"])<strtotime(date("Y-m-d"))==1) $status="Event over";												
-												echo "<td>".$status."</td></tr>";
+												echo "<td>".$status."</td>";
+												if(strtotime($i["date"])<strtotime(date("Y-m-d"))!=1){
+													?>
+													<td>
+													<form action="bookevent.php" onsubmit="return confirm('are you sure?')" method="POST">
+														<input type="text" name="booking_id" value="<?php echo $i["booking_id"]?>" hidden/>
+														<button class="btn btn-danger" type="submit" name="action" value="cancel"><i class="far fa-trash-alt mr-1"></i>Cancel</button>
+													</form>
+													</td></tr>
+													<?php
+												}
+												else echo "<td><button class='btn btn-secondary disabled' disabled><i class='far fa-trash-alt mr-1'></i>Cancel</button></td></tr>";
 											}
 										?>
                                     </tbody>
@@ -130,15 +142,7 @@
             </div>
             <!-- End of Main Content -->
 
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Hall booking</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
+            
 
         </div>
         <!-- End of Content Wrapper -->
@@ -151,25 +155,7 @@
         <i class="fas fa-angle-up"></i>
     </a>
 
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>

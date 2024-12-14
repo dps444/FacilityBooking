@@ -45,8 +45,8 @@
 					let cl="btn m-2 ";
 					let isdisabled="";
 					let day=(new Date(selected.join("-")+`-${i+1}`).toLocaleString("en-US",{"weekday":"long"}));
-					if(res.indexOf((i+1).toString())!=-1) cl+=" bg-danger";
-					if(res.indexOf((i+1).toString())!=-1 && new Date(selected.join("-")+"-"+(i+1).toString()) <= new Date()) cl="btn bg-warning text-dark";
+					if(res.indexOf((i+1).toString())!=-1 && new Date(selected.join("-")+"-"+(i+1).toString()) >= new Date()) cl+=" bg-danger";
+					else if(res.indexOf((i+1).toString())!=-1 && new Date(selected.join("-")+"-"+(i+1).toString()) <= new Date()) cl+=" bg-warning text-dark";
 					if(new Date(selected.join("-")+"-"+(i+1).toString()) <= new Date() || day==="Sunday"){
 						isdisabled="disabled";
 						cl+=" btn-secondary disabled ";
@@ -84,7 +84,7 @@
                 <div class="sidebar-brand-icon">
                     <img src="resources/logo.jpg" style="width:50px;height:50px"/>
                 </div>
-                <div class="sidebar-brand-text mx-3">Hall booking</div>
+                <div class="sidebar-brand-text mx-3">Facilities Booking</div>
             </span>
 
             <!-- Divider -->
@@ -177,15 +177,7 @@
             </div>
             <!-- End of Main Content -->
 
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Hall booking</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
+            
 
         </div>
         <!-- End of Content Wrapper -->

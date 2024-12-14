@@ -84,53 +84,18 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Edit facility</h1>
+                    <h1 class="h3 mb-2 text-gray-800">Create facility</h1>
                     <div class="card shadow mb-4">
-                        <?php
-            if(!isset($_SESSION["token"]) or (isset($_SESSION["isadmin"]) and $_SESSION["isadmin"]=="0")) echo "<script>window.location.href='login.php'</script>";
-            if($_SERVER["REQUEST_METHOD"]=="GET" && isset($_GET["hall_id"])){
-                $res=$db->exec_query(sprintf("select * from hall where hall_id=%s",$_GET["hall_id"]));
-                if(sizeof($res)>0){
-        ?>
-                <form action="halledit.php" method="POST" class="form m-3" osubmit="return confirm('are you sure?')">
-					<input type="text" name="hall_id" value="<?php echo $_GET["hall_id"]?>" hidden/>
-                    <div class="row mt-3">
-                        <div class="col-2">
-                            <label class="form-text ml-3">Name </label>
+                        <div class="card-header py-3">
+							<form class="form w-50" action="hallmanage.php" method="POST" onsubmit="return confirm('are you sure?');">								
+								Hall name <input type="text" name="hallname" class="form-control" required /><br/>
+								Capacity <input type="number" min="1" name="hallcap" class="form-control" required /><br/>
+								Description<br/><textarea name="halldescr" class="form-control" required></textarea><br/>
+								<button class="btn btn-primary" type="submit" name="action" value="create"><i class="fa fa-plus mr-1"></i>Create facility</button>
+								<button class="btn btn-secondary" type="reset"><i class=""></i>Clear</button>
+								<a class="btn btn-secondary" href="hallmanage.php"><i class="fas fa-reply mr-1"></i>Back</a>
+							</form>
                         </div>
-                        <div class="col">
-                            <input class="form-control w-50" type="text" name="hname" value="<?php echo $res[0]["hall_name"]?>" required="true"/>
-                        </div>
-                    </div>
-					<div class="row mt-3">
-                        <div class="col-2">
-                            <label class="form-text ml-3">Capacity </label>
-                        </div>
-                        <div class="col">
-                            <input class="form-control w-50" type="number" name="capacity" value="<?php echo $res[0]["capacity"]?>" required="true"/>
-                        </div>
-                    </div>
-					<div class="row mt-3">
-                        <div class="col-2">
-                            <label class="form-text ml-3">Description </label>
-                        </div>
-                        <div class="col">
-                            <textarea class="form-control w-50" name="descr" required="true"><?php echo $res[0]["description"]?></textarea>
-                        </div>
-                    </div>
-                    <button type="submit" name="action" value="edit" class="btn btn-success mt-3"><i class="fa fa-save mr-1"></i>Save changes</button>
-					<a class="btn btn-secondary mt-3" href="hallmanage.php"><i class="fas fa-reply mr-1"></i>Back</a>
-                </form>
-			<?php
-				}
-			}
-			else if($_SERVER["REQUEST_METHOD"]=="POST" && isset($_POST["action"])){
-					$st=$db->prepare_statement("update hall set hall_name=?, description=?, capacity=? where hall_id=?");
-					$st->bind_param("ssdd",$_POST["hname"],$_POST["descr"],$_POST["capacity"],$_POST["hall_id"]);
-					$st->execute();
-					echo "<script>alert('Facility updated');window.location.href='hallmanage.php';</script>";
-			}
-			?>		
                     </div>
 
                 </div>

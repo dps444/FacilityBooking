@@ -35,7 +35,7 @@
 				$st=$db->prepare_statement("insert into hall (hall_name,capacity,description,status) values (?,?,?,true)");
 				$st->bind_param("sss",$_POST["hallname"],$_POST["hallcap"],$_POST["halldescr"]);
 				$st->execute();
-				echo "<script>alert('New hall added');window.location.href='hallmanage.php'</script>";
+				echo "<script>alert('New facility created');window.location.href='hallmanage.php'</script>";
 			}
 			else if($_POST["action"]=="remove"){
 				$res=$db->exec_query("select count(*) from booking where hall_id=".$_POST["hall_id"]);
@@ -44,7 +44,7 @@
 					$st=$db->prepare_statement("delete from hall where hall_id=?");
 					$st->bind_param("d",$_POST["hall_id"]);
 					$st->execute();
-					echo "<script>alert('Hall removed');window.location.href='hallmanage.php'</script>";
+					echo "<script>alert('Facility removed');window.location.href='hallmanage.php'</script>";
 				}
 			}
 			else if($_POST["action"]=="toggle"){
@@ -53,7 +53,7 @@
 				$st=$db->prepare_statement("update hall set status=? where hall_id=?");
 				$st->bind_param("sd",$status,$_POST["hall_id"]);
 				$st->execute();
-				echo "<script>alert('Status of the hall has been changed');window.location.href='hallmanage.php'</script>";
+				echo "<script>alert('Status of the facility has been changed');window.location.href='hallmanage.php'</script>";
 			}
 		}
 	?>
@@ -109,17 +109,9 @@
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
-                    <!-- Page Heading -->                    
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-							<h1 class="h3 mb-2 text-gray-800">Create and manage event premises</h1><br/>
-							<form class="form w-50" method="POST" onsubmit="return confirm('are you sure?');">								
-								Hall name <input type="text" name="hallname" class="form-control" required /><br/>
-								Capacity <input type="number" min="1" name="hallcap" class="form-control" required /><br/>
-								Description<br/><textarea name="halldescr" class="form-control" required></textarea><br/>
-								<button class="btn btn-primary" type="submit" name="action" value="create"><i class="fa fa-plus mr-1"></i>Add new facility</button>
-							</form>
-                        </div>
+                    <!-- Page Heading -->                 
+					<h1 class="h3 mb-2 text-gray-800">Manage facilities</h1>
+                    <div class="card shadow mb-4">                        
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -161,7 +153,9 @@
                                 </table>
                             </div>
                         </div>
+						
                     </div>
+					<a class="btn btn-primary" href="hallcreate.php"><i class="fa fa-plus mr-1"></i>Add new facility</a>
 
                 </div>
                 <!-- /.container-fluid -->
