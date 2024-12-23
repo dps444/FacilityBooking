@@ -58,6 +58,11 @@
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Facilities</span></a>
             </li>
+			<li class="nav-item">
+                <a class="nav-link" href="issues.php">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Issues</span></a>
+            </li>
 			<?php
 				if(isset($_SESSION["token"]) and $_SESSION["isadmin"]=="1"){
 			?>

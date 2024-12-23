@@ -8,8 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-
-    <title>Booking history</title>
+    <title>Admin</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -19,6 +18,7 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
+	<link href="css/sb-admin-2.min.css" rel="stylesheet">
 	<link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 	<link href="resources/logo.jpg" rel="icon">
 </head>
@@ -29,7 +29,8 @@
 		include_once("db.php");
 		session_start();
 		$db=new db();
-		if(!isset($_SESSION["token"])) echo "<script>window.location.href='login.php'</script>";
+		if(!isset($_SESSION["token"]) or (isset($_SESSION["isadmin"]) and $_SESSION["isadmin"]=="0")) echo "<script>window.location.href='login.php'</script>";
+		
 	?>
 
     <!-- Page Wrapper -->
@@ -39,31 +40,29 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <span class="sidebar-brand d-flex align-items-center justify-content-center">
                 <div class="sidebar-brand-icon">
                     <img src="resources/logo.jpg" style="width:50px;height:50px"/>
                 </div>
-                <div class="sidebar-brand-text mx-3">Facility Booking</div>
-            </a>
+                <div class="sidebar-brand-text mx-3">ADMIN PANEL</div>
+            </span>
 
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
-
-            
-            <li class="nav-item">
-                <a class="nav-link" href="index.php">
+			<li class="nav-item">
+                <a class="nav-link" href="admin.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
-            </li>
-			<li class="nav-item active">
-                <a class="nav-link" href="booking_history.php">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Booking history</span></a>
+                    <span>Booking requests</span></a>
             </li>
 			<li class="nav-item">
-                <a class="nav-link" href="raiseissue.php">
+                <a class="nav-link" href="hallmanage.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Raise issue</span></a>
+                    <span>Facilities</span></a>
+            </li>
+			<li class="nav-item active">
+                <a class="nav-link" href="issues.php">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Issues</span></a>
             </li>
 			<?php
 				if(isset($_SESSION["token"])){					
@@ -72,7 +71,7 @@
                 <a class="nav-link" href="login.php?action=logout">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Logout</span></a>
-            </li>
+            </li>			
 			<?php
 				}
 				else echo("<script>window.location.href='login.php'</script>");
@@ -90,55 +89,36 @@
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
-                    <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Your previous bookings</h1>
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                        </div>
+                    <!-- Page Heading -->                 
+					<h1 class="h3 mb-2 text-gray-800">Issues</h1>
+                    <div class="card shadow mb-4">                        
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Event</th>
-                                            <th>From</th>
-                                            <th>To</th>
-                                            <th>Department</th>
-                                            <th>Hall</th>
-                                            <th>Status</th>
-											<th>Action</th>
+                                            <th>User</th>
+											<th>Issue</th>
+											<th>Submitted on</th>
                                         </tr>
                                     </thead>
                                     <tbody>
 										<?php
-											$res=$db->exec_query(sprintf("select booking_id,event_name,dept,(select hall_name from hall where hall_id=booking.hall) as hall,status,DATE(fromtime) as date,TIME(fromtime) as fromtime,TIME(totime) as totime from booking where uname='%s' order by date(fromtime) desc",$_SESSION["token"]));
+											$res=$db->exec_query(sprintf("select * from issue"));
 											foreach($res as $i){
-												echo "<tr><td>".$i["event_name"]."</td>";
-												echo "<td>".$i["date"]." ".$i["fromtime"]."</td>";
-												echo "<td>".$i["totime"]."</td>";
-												echo "<td>".$i["dept"]."</td>";
-												echo "<td>".$i["hall"]."</td>";
-												$status="Awaiting approval";
-												if($i["status"]==1) $status="Booked";
-												if(strtotime($i["date"])<strtotime(date("Y-m-d"))==1) $status="Event over";												
-												echo "<td>".$status."</td>";
-												if(strtotime($i["date"])<strtotime(date("Y-m-d"))!=1){
-													?>
-													<td>
-													<form action="bookevent.php" onsubmit="return confirm('are you sure?')" method="POST">
-														<input type="text" name="booking_id" value="<?php echo $i["booking_id"]?>" hidden/>
-														<button class="btn btn-danger" type="submit" name="action" value="cancel"><i class="far fa-trash-alt mr-1"></i>Cancel</button>
-													</form>
-													</td></tr>
-													<?php
-												}
-												else echo "<td><button class='btn btn-secondary disabled' disabled><i class='far fa-trash-alt mr-1'></i>Cancel</button></td></tr>";
+												echo sprintf("
+													<tr>
+														<td>%s</td>
+														<td>%s</td>
+														<td>%s</td>
+												",$i["fname"],$i["descr"],$i["created_time"]);
 											}
 										?>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
+						
                     </div>
 
                 </div>
@@ -147,18 +127,21 @@
             </div>
             <!-- End of Main Content -->
 
-            
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Hall booking</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
 
         </div>
         <!-- End of Content Wrapper -->
 
     </div>
     <!-- End of Page Wrapper -->
-
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
 
     
 
@@ -176,8 +159,6 @@
 
     <!-- Page level custom scripts -->
     <script src="js/datatables.js"></script>
-    
-
 </body>
 
 </html>

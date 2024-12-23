@@ -84,7 +84,7 @@
                 <div class="sidebar-brand-icon">
                     <img src="resources/logo.jpg" style="width:50px;height:50px"/>
                 </div>
-                <div class="sidebar-brand-text mx-3">Facilities Booking</div>
+                <div class="sidebar-brand-text mx-3">Facility Booking</div>
             </span>
 
             <!-- Divider -->
@@ -100,6 +100,11 @@
                 <a class="nav-link" href="booking_history.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Booking history</span></a>
+            </li>
+			<li class="nav-item">
+                <a class="nav-link" href="raiseissue.php">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Raise issue</span></a>
             </li>
 			<?php
 				if(isset($_SESSION["token"])){					
