@@ -54,7 +54,7 @@
 			else if($_SERVER["REQUEST_METHOD"]=="GET" and isset($_GET["action"]) and $_GET["action"]=="logout"){
 					unset($_SESSION["token"]);
 					unset($_SESSION["isadmin"]);
-					echo "<script>alert('logged out succesfully');window.location.href='login.php'</script>";
+					echo "<script>sessionStorage.clear();window.location.href='login.php'</script>";
 			}
             else if($_SERVER["REQUEST_METHOD"]=="POST" and isset($_POST["action"]) and  $_POST["action"]=="login"){
                 $db=new db();

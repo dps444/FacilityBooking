@@ -93,30 +93,31 @@
 					<h1 class="h3 mb-2 text-gray-800">Issues</h1>
                     <div class="card shadow mb-4">                        
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>User</th>
-											<th>Issue</th>
-											<th>Submitted on</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-										<?php
-											$res=$db->exec_query(sprintf("select * from issue"));
-											foreach($res as $i){
-												echo sprintf("
-													<tr>
-														<td>%s</td>
-														<td>%s</td>
-														<td>%s</td>
-												",$i["fname"],$i["descr"],$i["created_time"]);
-											}
-										?>
-                                    </tbody>
-                                </table>
-                            </div>
+							<?php
+								if(isset($_GET["action"]) && $_GET["action"]=="delete"){
+									$st=$db->prepare_statement("delete from issue where issue_id=?");
+									$st->bind_param("d",$_GET["issue_id"]);
+									$st->execute();
+									echo "<script>window.location.href='issues.php'</script>";
+								}
+								$res=$db->exec_query(sprintf("select * from issue"));
+								if(sizeof($res)==0) echo "No issues";
+								foreach($res as $i){
+									$hall=$db->exec_query("select hall_name from hall where hall_id='".$i["hall_id"]."'")[0]["hall_name"];
+							?>
+							<div class="card mb-1">
+								<div class="card-body">
+									<h4>submitted by <?php echo $i["fname"] ?> (<?php echo $i["uname"] ?>) on <?php echo $i["created_time"] ?></h4>
+									<span><?php echo $i["descr"] ?>
+									<br/>
+									User requested for <?php echo $hall ?> on <?php echo $i["req_date"] ?>
+									</span><br/><br/>
+									<a href="issues.php?action=delete&issue_id=<?php echo $i["issue_id"]?>" class="btn btn-danger"><i class="far fa-trash-alt mr-1"></i>Remove</a>
+								</div>
+							</div>
+							<?php 
+								}
+							?>
                         </div>
 						
                     </div>
@@ -127,15 +128,7 @@
             </div>
             <!-- End of Main Content -->
 
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Hall booking</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
+            
 
         </div>
         <!-- End of Content Wrapper -->

@@ -22,12 +22,26 @@
 	<link href="resources/logo.jpg" rel="icon">
 	<script>
             window.onload=()=>{
-				document.forms[0]["pageurl"].value=window.location.href;
+				let form=document.forms[0];
+				if(sessionStorage.hasOwnProperty("form_cache")){
+					let form_cache=JSON.parse(sessionStorage.getItem("form_cache"));
+					for(let i in form_cache){
+						form[i].value=form_cache[i];
+					}
+				}
+				form["pageurl"].value=window.location.href;
 			}
 			function timesetter(){
 				const starttime=document.getElementById("from_time");
 				const endtime=document.getElementById("to_time");
 				endtime.setAttribute("min",starttime.value);
+			}
+			function saveinmem(){
+				let form_cache={};
+				let form=document.forms[0];
+				for (let i of ["ename","yname","email","dept","from_time","to_time","capacity"]) form_cache[i]=form[i].value;
+				console.log(form_cache);
+				sessionStorage.setItem("form_cache",JSON.stringify(form_cache));
 			}
     </script>
 </head>
@@ -124,7 +138,7 @@
 					foreach($times as $i) echo $i["fromtime"]." to ".$i["totime"]."<br/>";
 				}
         ?>
-                <form action="bookevent.php" method="POST" class="form" onsubmit="return confirm('are you sure?')">
+                <form action="bookevent.php" method="POST" class="form" onsubmit="return confirm('are you sure?')" onchange="saveinmem()">
                     <input type="text" name="date" value="<?php echo $_GET["date"]?>" hidden/>
 					<input type="text" name="hall" value="<?php echo $_GET["hall"]?>" hidden/>
 					<input type="text" name="pageurl" value="" hidden/>
@@ -182,7 +196,14 @@
                             <input id="to_time" class="form-control w-25" type="time" min="08:00:00" max="19:00:00" name="to_time"  required="true"/>
                         </div>
                     </div>
-					
+					<div class="row mt-3">
+                        <div class="col-2">
+                            <label class="form-text ml-3" for="to_time">Expected occupants:</label>
+                        </div>
+                        <div class="col">
+							<input type="number" class="form-control w-25" name="capacity" required="true"/>
+                        </div>
+                    </div>					
                     <button type="submit" name="action" value="book" class="btn btn-success mt-3"><i class="fa fa-plus mr-1"></i>Book</button>
 					<a class="btn btn-secondary mt-3" href="index.php"><i class="fas fa-reply mr-1"></i>Back</a>
 					<button type="reset" class="btn btn-secondary mt-3"><i class=""></i>Clear</button>

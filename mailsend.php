@@ -5,21 +5,24 @@
 	require 'D:\Programs\XAMPP\php\pear\PHPMailer\src\PHPMailer.php';
 	require 'D:\Programs\XAMPP\php\pear\PHPMailer\src\SMTP.php';
 	class SendEmail{
-		protected $mailer;
+		protected $mail;
 		function __construct(){
-			$this->mailer=new PHPMailer();
-			$this->mailer->isSMTP();
-			$this->mailer->Host="127.0.0.1";
-			$this->mailer->SMTPAuth=false;
-			$this->mailer->setFrom("user1@localhost.net");
+			$this->mail->isSMTP();
+			$this->mail->Host = 'smtp.gmail.com';
+			$this->mail->SMTPAuth = true;
+			$this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+			$this->mail->Port = 587;
+			$this->mail->Username = 'email'; // email address
+			$this->mail->Password = 'password'; // app password
+			$this->mail->setFrom('Facility booking manager','');
 		}
 		function send($address,$subject,$body){
 			try{
-				$this->mailer->addAddress($address);
-				$this->mailer->isHTML(true);
-				$this->mailer->Subject =$subject;
-				$this->mailer->Body=$body;
-				return $this->mailer->send();
+				$this->mail->addAddress($address);
+				$this->mail->isHTML(true);
+				$this->mail->Subject =$subject;
+				$this->mail->Body=$body;
+				return $this->mail->send();
 			}
 			catch(Exception){
 				return null;

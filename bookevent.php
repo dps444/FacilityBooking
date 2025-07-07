@@ -113,30 +113,52 @@
 include_once("mailsend.php");
 try{
     if($_SERVER["REQUEST_METHOD"]=="POST"){
-        $db=new db();    
+        $db=new db();
         if($_POST["action"]=="book"){
             $_POST["from_time"]=$_POST["date"]." ".$_POST["from_time"].":00";
             $_POST["to_time"]=$_POST["date"]." ".$_POST["to_time"].":00";
-			$res=$db->exec_query(sprintf("select * from booking where TIME(fromtime)<='%s' and TIME(totime)>='%s' and DATE(fromtime)=DATE('%s')",$_POST["to_time"],$_POST["from_time"],$_POST["from_time"]));
-			if(sizeof($res)==0){
-				$st=$db->prepare_statement("insert into booking (event_name,fromtime,totime,uname,fname,dept,email,hall) values(?,?,?,?,?,?,?,?)");
-				$st->bind_param("ssssssss",$_POST["ename"],$_POST["from_time"],$_POST["to_time"],$_SESSION["token"],$_POST["yname"],$_POST["dept"],$_POST["email"],$_POST["hall"]);
-				$st->execute();
-				(new SendEmail())->send($_POST["email"],"Booking request",
-					sprintf("You have requested to book the %s on %s",$_POST["hall"],$_POST["from_time"])
-				);
-				$hallname=$db->exec_query("select hall_name from hall where hall_id=".$_POST["hall"])[0]["hall_name"];
-				echo sprintf("
-					<h4>Booking has been requested on %s for %s</h4>
-					<br/>		
-					<h6>Event name: %s</h6>
-					<h6>Name: %s (%s)</h6>
-					<h6>From %s to %s</h6>
-					<h6>Department: %s</h6>
-					",explode(" ",$_POST["from_time"])[0],$hallname,$_POST["ename"],$_POST["yname"],$_POST["email"],explode(" ",$_POST["from_time"])[1],explode(" ",$_POST["to_time"])[1],$_POST["dept"]);
+			$hallinfo=$db->exec_query("select * from hall where hall_id=".$_POST["hall"])[0];
+			if($hallinfo["capacity"]<$_POST["capacity"]){
+				$res=$db->exec_query(sprintf(
+					"select * from hall where
+					hall_id not in (select hall from booking where TIME(fromtime)<='%s' and TIME(totime)>='%s' and DATE(fromtime)=DATE('%s'))
+					and capacity>=%s and status=1
+					",$_POST["to_time"],$_POST["from_time"],$_POST["from_time"],$_POST["capacity"]
+				));
+				echo "<h4>Expected occupants exceed the capacity of the premise, please choose another.</h4><br/>";
+				if(sizeof($res)>0){
+					echo "<h6>The following premises are free on this day- </h6><br/>";
+					foreach($res as $i)	echo $i["hall_name"]."<br/>";
+					echo "<form action='bookevent.php' method='POST'>";
+					unset($_POST["hall"],$_POST["action"],$_POST["pageurl"]);
+					foreach($_POST as $i=>$j) echo sprintf("<input type='text' name='%s' value='%s' hidden/>",$i,$j);
+					echo "<select class='form-control w-50' name='hall'>";
+					foreach($res as $i) echo sprintf("<option value='%s'>%s</option>",$i["hall_id"],$i["hall_name"]);
+					echo "</select><br/><button type='submit' class='btn btn-primary' name='action' value='book'>Book</button></form>";
+				}				
+				else echo "There are no premises available on this day<br/>";
 			}
-			else echo "<script>alert('The slot you chose was already booked by ".$res[0]["fname"].", please choose another slot');window.location.href='".$_POST["pageurl"]."'</script>";
-			
+			else{
+				$res=$db->exec_query(sprintf("select * from booking where TIME(fromtime)<='%s' and TIME(totime)>='%s' and DATE(fromtime)=DATE('%s') and hall=%s",$_POST["to_time"],$_POST["from_time"],$_POST["from_time"],$_POST["hall"]));
+				if(sizeof($res)==0){					
+					$st=$db->prepare_statement("insert into booking (event_name,fromtime,totime,uname,fname,dept,email,hall) values(?,?,?,?,?,?,?,?)");
+					$st->bind_param("ssssssss",$_POST["ename"],$_POST["from_time"],$_POST["to_time"],$_SESSION["token"],$_POST["yname"],$_POST["dept"],$_POST["email"],$_POST["hall"]);
+					$st->execute();
+					(new SendEmail())->send($_POST["email"],"Booking request",
+						sprintf("You have requested to book the %s on %s",$_POST["hall"],$_POST["from_time"])
+					);
+					echo sprintf("
+						<h4>Booking has been requested on %s for %s</h4>
+						<br/>
+						<h6>Event name: %s</h6>
+						<h6>Name: %s (%s)</h6>
+						<h6>From %s to %s</h6>
+						<h6>Department: %s</h6>
+						",explode(" ",$_POST["from_time"])[0],$hallinfo["hall_name"],$_POST["ename"],$_POST["yname"],$_POST["email"],explode(" ",$_POST["from_time"])[1],explode(" ",$_POST["to_time"])[1],$_POST["dept"]);
+					echo "<script>sessionStorage.removeItem('form_cache')</script>";
+				}
+				else echo "<script>alert('The slot you chose was already booked by ".$res[0]["fname"].", please choose another slot');window.location.href='".$_POST["pageurl"]."'</script>";
+			}
         }
         else if($_POST["action"]=="cancel"){
 			$res=$db->exec_query(sprintf("select * from booking where booking_id=%s",$_POST["booking_id"]));
