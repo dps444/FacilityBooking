@@ -21,6 +21,5 @@ User roles:
    - Use the provided SQL file to set up the database
 3. Run the project
    - Use a local server like XAMPP or WAMP, or run with the PHP built-in server
-   - 
 ## Notes
 This project was created for learning and experimentation. It demonstrates basic web application functionality with authentication, role-based access, and a simple booking workflow.
